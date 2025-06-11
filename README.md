@@ -36,8 +36,36 @@ Snowflake will soon enforce stricter requirements on user authentication. SAFE h
 ## Installation
 
 ```bash
+## Installation (Snowflake Native App Deployment)
+
+This project is designed to run as a **Streamlit Native App** inside your Snowflake account.
+
+### Step 1: Prepare Your Snowflake Environment
+
+Ensure you have the following:
+
+- A role with `CREATE APPLICATION` and `CREATE DATABASE` privileges
+- Access to a working Snowflake warehouse
+- ACCOUNTADMIN or a role with privileges to read from `SNOWFLAKE.ACCOUNT_USAGE` views (e.g., `login_history`, `users`)
+
+### Step 2: Clone the Repo
+
+```bash
 git clone https://github.com/your-org/safe.git
 cd safe
-python -m venv venv
-source venv/bin/activate  # or .\venv\Scripts\activate on Windows
-pip install -r requirements.txt
+
+
+-- 1. Create a database for your Streamlit app (optional)
+CREATE DATABASE SAFE_APP_DB;
+
+-- 2. Create or use a schema
+USE SCHEMA SAFE_APP_DB.PUBLIC;
+
+-- 3. Create the Streamlit application
+CREATE OR REPLACE STREAMLIT SAFE_APP
+FROM '@your_stage/safe'
+MAIN_FILE = '/app.py';
+
+
+GRANT USAGE ON STREAMLIT SAFE_APP TO ROLE YOUR_ROLE;
+
