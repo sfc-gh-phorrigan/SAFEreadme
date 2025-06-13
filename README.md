@@ -83,9 +83,6 @@ You can contribute in one of two ways:
 
 Please include as much detail as possible to help us understand the context of your request. If submitting a code-related suggestion, linking to specific lines or snippets is appreciated.
 
----
-
-Let me know if you want me to regenerate the `README.md` file with this included.
 
 
 ## License
