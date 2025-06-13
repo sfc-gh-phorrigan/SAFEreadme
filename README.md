@@ -1,71 +1,89 @@
-# SAFEreadme# SAFE – Snowflake Access Flow Evaluator
+# SAFE – Snowflake Access Flow Evaluator
 
 > Project under development – name subject to change.
 
 ## Overview
 
-SAFE is a Streamlit-based application designed to help Snowflake account administrators and users evaluate whether their current authentication methods are compliant with upcoming changes to Snowflake's password and MFA (Multi-Factor Authentication) policies.
+SAFE is a Streamlit Native App designed to run directly inside Snowflake. It helps administrators evaluate whether current authentication methods comply with Snowflake’s upcoming password and MFA policy changes.
 
-This tool queries Snowflake account metadata and login history to flag users and service accounts that may need to update their authentication methods—such as switching from basic auth to supported MFA mechanisms.
-![image](https://github.com/user-attachments/assets/3b7dc904-327b-4cd3-9607-1c7dc67c4b89)
-
+The app analyzes login behavior, authentication types, and user classifications using `ACCOUNT_USAGE` views, and presents actionable insights to improve security posture.
 
 ## Key Features
 
-- Identifies users who are still using password-based login without MFA
-- 🔍Highlights service accounts that may break due to upcoming enforcement
-- Provides a clear dashboard view of authentication factors across your Snowflake environment
--  Lightweight and quick to deploy using Streamlit
+- Displays authentication methods used across all users
+- Flags accounts still relying on password-only access
+- Identifies missing MFA enrollment and outdated user types
+- Recommends and executes actions such as unsetting passwords or changing user classifications
+- Runs entirely within the Snowflake environment—no external servers required
 
 ## Use Case
 
-Snowflake will soon enforce stricter requirements on user authentication. SAFE helps you get ahead of the curve by:
+This tool helps Snowflake administrators prepare for:
 
-- Running checks against `login_history` and `users` tables
-- Flagging non-compliant authentication flows
-- Helping you plan user remediation or automation updates
+- Enforcement of multi-factor authentication
+- Retirement of password-only login flows
+- Transitioning users to supported methods like SAML, OAuth, or RSA key pairs
+
+SAFE uses account metadata to guide remediation and reduce manual audit effort.
 
 ## Requirements
 
-- Python 3.8+
-- Snowflake account with `ACCOUNTADMIN` or sufficient privileges to query `login_history` and `users`
-- [Snowflake Python Connector](https://docs.snowflake.com/en/developer-guide/python-connector)
-- [Streamlit](https://streamlit.io/)
-- `.env` file or secrets manager for credentials
+- Snowflake account that supports Streamlit Native Apps
+- A role with:
+  - `CREATE STREAMLIT` and `CREATE DATABASE` privileges
+  - Read access to:
+    - `SNOWFLAKE.ACCOUNT_USAGE.login_history`
+    - `SNOWFLAKE.ACCOUNT_USAGE.users`
+    - `SNOWFLAKE.ACCOUNT_USAGE.policy_references`
+  - Access to a compute warehouse
+- A Snowflake stage for uploading the app
 
-## Installation
+## Deployment
 
-```bash
-## Installation (Snowflake Native App Deployment)
+### Step 1: Upload the App
 
-This project is designed to run as a **Streamlit Native App** inside your Snowflake account.
+Use SnowSQL or the UI to upload the `app.py` file into a Snowflake stage.
 
-### Step 1: Prepare Your Snowflake Environment
+```sql
+CREATE OR REPLACE STAGE safe_stage;
+PUT file://app.py @safe_stage AUTO_COMPRESS=FALSE;
+```
 
-Ensure you have the following:
+### Step 2: Create the Application
 
-- A role with `CREATE APPLICATION` and `CREATE DATABASE` privileges
-- Access to a working Snowflake warehouse
-- ACCOUNTADMIN or a role with privileges to read from `SNOWFLAKE.ACCOUNT_USAGE` views (e.g., `login_history`, `users`)
-
-### Step 2: Clone the Repo
-
-```bash
-git clone https://github.com/your-org/safe.git
-cd safe
-
-
--- 1. Create a database for your Streamlit app (optional)
-CREATE DATABASE SAFE_APP_DB;
-
--- 2. Create or use a schema
+```sql
+CREATE OR REPLACE DATABASE SAFE_APP_DB;
 USE SCHEMA SAFE_APP_DB.PUBLIC;
 
--- 3. Create the Streamlit application
 CREATE OR REPLACE STREAMLIT SAFE_APP
-FROM '@your_stage/safe'
+FROM '@safe_stage/app.py'
 MAIN_FILE = '/app.py';
 
+GRANT USAGE ON STREAMLIT SAFE_APP TO ROLE <your_admin_role>;
+```
 
-GRANT USAGE ON STREAMLIT SAFE_APP TO ROLE YOUR_ROLE;
+Once created, the app can be accessed directly from the Snowflake UI under Streamlit Apps.
 
+## Feedback and Contributions
+
+SAFE is an internal project developed at Snowflake. If you’d like to provide feedback, report bugs, or suggest improvements, please email us at:
+
+```
+safe@snowflake.com
+```
+
+We're open to collaboration and happy to hear how you’re using SAFE to prepare for authentication policy changes.
+
+## License
+
+This project is licensed under the Apache 2.0 License.
+
+```
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+```
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
