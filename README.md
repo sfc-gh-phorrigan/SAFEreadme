@@ -64,15 +64,29 @@ GRANT USAGE ON STREAMLIT SAFE_APP TO ROLE <your_admin_role>;
 
 Once created, the app can be accessed directly from the Snowflake UI under Streamlit Apps.
 
-## Feedback and Contributions
 
-SAFE is an internal project developed at Snowflake. If you’d like to provide feedback, report bugs, or suggest improvements, please email us at:
+## How to Contribute
 
-```
-safe@snowflake.com
-```
+SAFE is actively being developed, and we welcome feedback, bug reports, and feature suggestions.
 
-We're open to collaboration and happy to hear how you’re using SAFE to prepare for authentication policy changes.
+You can contribute in one of two ways:
+
+1. **Email Feedback**
+   Reach out to us directly at `safe@snowflake.com` with your questions, ideas, or bug reports.
+
+2. **Open a GitHub Issue**
+   If you're using this project via GitHub, you can open an issue to:
+
+   * Report a bug
+   * Request a new feature
+   * Share improvements or use cases
+
+Please include as much detail as possible to help us understand the context of your request. If submitting a code-related suggestion, linking to specific lines or snippets is appreciated.
+
+---
+
+Let me know if you want me to regenerate the `README.md` file with this included.
+
 
 ## License
 
